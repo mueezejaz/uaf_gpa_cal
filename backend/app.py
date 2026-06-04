@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import urllib3
+import os
 from collections import defaultdict
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

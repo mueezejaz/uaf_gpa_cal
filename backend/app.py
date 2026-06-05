@@ -18,7 +18,8 @@ app = Flask(
 
 CORS(app, origins=[
     "http://127.0.0.1:5500",
-    "http://localhost:5500"
+    "http://localhost:5500",
+    "https://mueezejaz.github.io",
 ])
 
 BASE_URL  = "https://lms.uaf.edu.pk/course/uaf_student_result.php"

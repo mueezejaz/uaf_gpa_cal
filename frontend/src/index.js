@@ -36,17 +36,24 @@ function renderStudentCard(info) {
 function renderCourseRow(course) {
   const grade = course.grade || "";
   const gradeClass = `grade-${grade.toUpperCase()}`;
+  const isExcluded = course.excluded;
+
   return `
-    <tr>
+    <tr class="${isExcluded ? 'row-excluded' : ''}">
       <td class="code">${course.code}</td>
-      <td>${course.title}</td>
+      <td>
+        ${course.title}
+        ${isExcluded
+      ? `<span class="repeat-badge" title="${course.repeat_note}">Repeated later — excluded from GPA</span>`
+      : ''}
+      </td>
       <td class="num center">${course.credit_hours}</td>
       <td class="num">${course.mid}</td>
       <td class="num">${course.assignment}</td>
       <td class="num">${course.final}</td>
       <td class="num">${course.practical}</td>
       <td class="num">${course.total}</td>
-      <td class="num">${course.qp || ""}</td>
+      <td class="num">${isExcluded ? '—' : (course.qp || "")}</td>
       <td class="center">
         <span class="grade-chip ${gradeClass}">${grade || "-"}</span>
       </td>

@@ -1,0 +1,770 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --black: #000000;
+    --dark-brown: #1F150C;
+    --mid-brown: #412D15;
+    --cream: #E1DCC9;
+    --cream-dim: rgba(225, 220, 201, 0.55);
+    --cream-faint: rgba(225, 220, 201, 0.08);
+    --grade-a: #7fa87c;
+    --grade-b: #7a9ec0;
+    --grade-c: #c9b46a;
+    --grade-d: #c47a4a;
+    --grade-f: #b85555;
+}
+
+html,
+body {
+    height: 100%;
+    background: var(--black);
+    color: var(--cream);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+#app {
+    min-height: 100vh;
+}
+
+.page {
+    display: none;
+    min-height: 100vh;
+}
+
+.page.active {
+    display: flex;
+}
+
+/* --- Landing Page --- */
+#landing-page {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--black);
+    padding: 20px;
+}
+
+.landing-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.landing-bg::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 60%;
+    height: 80%;
+    background: radial-gradient(ellipse at center, rgba(65, 45, 21, 0.35) 0%, transparent 70%);
+}
+
+.landing-bg::after {
+    content: "";
+    position: absolute;
+    bottom: -10%;
+    right: -5%;
+    width: 50%;
+    height: 60%;
+    background: radial-gradient(ellipse at center, rgba(31, 21, 12, 0.5) 0%, transparent 70%);
+}
+
+.grain-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox=%270 0 256 256%27 xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.9%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%25%27 height=%27100%25%27 filter=%27url%28%23noise%29%27 opacity=%270.04%27/%3E%3C/svg%3E");
+    background-size: 200px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.landing-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 520px;
+}
+
+.university-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 64px;
+}
+
+.mark-rule {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, transparent, var(--mid-brown), transparent);
+    margin-bottom: 24px;
+    opacity: 0.6;
+}
+
+.mark-initials {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.mark-title {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.mark-subtitle {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* --- Registration Input Form --- */
+.input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-label {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    margin-bottom: 16px;
+    align-self: flex-start;
+}
+
+.reg-input-wrapper {
+    width: 100%;
+    position: relative;
+    border: 1px solid rgba(65, 45, 21, 0.6);
+    background: rgba(31, 21, 12, 0.3);
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    padding: 0 20px;
+    transition: border-color 0.3s ease, background 0.3s ease;
+    cursor: text;
+}
+
+.reg-input-wrapper:focus-within {
+    border-color: rgba(225, 220, 201, 0.35);
+    background: rgba(31, 21, 12, 0.5);
+}
+
+.reg-mirror {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    white-space: pre;
+    font-family: "DM Mono", monospace;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+.reg-input-yr,
+.reg-input-num {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    color: var(--cream);
+    font-family: "DM Mono", monospace;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    height: 100%;
+}
+
+.reg-input-yr {
+    width: 0;
+    /* JS controls dynamic width */
+}
+
+.reg-input-num {
+    flex: 1;
+    min-width: 0;
+}
+
+.reg-input-yr::placeholder,
+.reg-input-num::placeholder {
+    color: rgba(225, 220, 201, 0.2);
+}
+
+.reg-separator {
+    user-select: none;
+    pointer-events: none;
+    font-family: "DM Mono", monospace;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--cream-dim);
+    padding: 0 6px;
+    display: flex;
+    align-items: center;
+}
+
+.input-hint {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: rgba(225, 220, 201, 0.3);
+    margin-top: 12px;
+    align-self: flex-start;
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 32px;
+    padding: 18px 32px;
+    background: var(--mid-brown);
+    border: 1px solid rgba(65, 45, 21, 0.8);
+    color: var(--cream);
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: rgba(65, 45, 21, 0.9);
+    border-color: rgba(225, 220, 201, 0.25);
+}
+
+.submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.submit-btn.loading {
+    color: transparent;
+}
+
+.submit-btn.loading::after {
+    content: "LOADING...";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cream);
+    background: repeating-linear-gradient(90deg,
+            transparent 0%,
+            rgba(225, 220, 201, 0.08) 50%,
+            transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.error-msg {
+    margin-top: 20px;
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: var(--grade-f);
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.error-msg.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Result Page --- */
+#result-page {
+    flex-direction: column;
+    background: var(--black);
+}
+
+.result-header {
+    border-bottom: 1px solid rgba(65, 45, 21, 0.5);
+    padding: 24px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(31, 21, 12, 0.95);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.result-header-brand {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+}
+
+.back-btn {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream-dim);
+    background: transparent;
+    border: 1px solid rgba(65, 45, 21, 0.5);
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.back-btn:hover {
+    color: var(--cream);
+    border-color: rgba(225, 220, 201, 0.3);
+    background: rgba(65, 45, 21, 0.2);
+}
+
+.result-body {
+    flex: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 48px 48px 80px;
+}
+
+/* --- Perfect Grid Border Hack for Student Card --- */
+.student-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px;
+    background: rgba(65, 45, 21, 0.4);
+    /* Border color */
+    border: 1px solid rgba(65, 45, 21, 0.4);
+    margin-bottom: 56px;
+}
+
+.student-card-field {
+    padding: 18px 24px;
+    background: var(--black);
+    /* Inner cell background */
+}
+
+.student-card-key {
+    font-family: "DM Mono", monospace;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(225, 220, 201, 0.4);
+    margin-bottom: 8px;
+}
+
+.student-card-val {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--cream);
+    letter-spacing: 0.03em;
+}
+
+/* --- Semesters & Tables --- */
+.semester-block {
+    margin-bottom: 56px;
+}
+
+.semester-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(65, 45, 21, 0.4);
+}
+
+.semester-name {
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+}
+
+.semester-gpa-tag {
+    font-family: "DM Mono", monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: rgba(225, 220, 201, 0.45);
+}
+
+.semester-gpa-val {
+    font-family: "DM Mono", monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+}
+
+/* Typography Helpers */
+.gpa-a {
+    color: var(--grade-a);
+}
+
+.gpa-b {
+    color: var(--grade-b);
+}
+
+.gpa-c {
+    color: var(--grade-c);
+}
+
+.gpa-d {
+    color: var(--grade-d);
+}
+
+.gpa-f {
+    color: var(--grade-f);
+}
+
+/* Table Responsiveness */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid rgba(65, 45, 21, 0.3);
+    border-bottom: none;
+}
+
+.courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+    /* Forces scroll on mobile instead of squishing */
+}
+
+.courses-table thead tr {
+    background: rgba(31, 21, 12, 0.4);
+    border-bottom: 1px solid rgba(65, 45, 21, 0.5);
+}
+
+.courses-table th {
+    font-family: "DM Mono", monospace;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(225, 220, 201, 0.4);
+    padding: 14px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.courses-table tbody tr {
+    border-bottom: 1px solid rgba(65, 45, 21, 0.2);
+    transition: background 0.15s ease;
+}
+
+.courses-table tbody tr:hover {
+    background: rgba(65, 45, 21, 0.15);
+}
+
+.courses-table td {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--cream);
+    padding: 16px 14px;
+    vertical-align: middle;
+}
+
+.courses-table th.num,
+.courses-table td.num {
+    text-align: right;
+}
+
+.courses-table th.center,
+.courses-table td.center {
+    text-align: center;
+}
+
+.courses-table td.code {
+    font-family: "DM Mono", monospace;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: var(--cream-dim);
+    white-space: nowrap;
+}
+
+.courses-table td.num {
+    font-family: "DM Mono", monospace;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--cream-dim);
+}
+
+.grade-chip {
+    display: inline-block;
+    font-family: "DM Mono", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 2px;
+    min-width: 34px;
+    text-align: center;
+}
+
+.grade-A {
+    background: rgba(127, 168, 124, 0.12);
+    color: var(--grade-a);
+    border: 1px solid rgba(127, 168, 124, 0.25);
+}
+
+.grade-B {
+    background: rgba(122, 158, 192, 0.12);
+    color: var(--grade-b);
+    border: 1px solid rgba(122, 158, 192, 0.25);
+}
+
+.grade-C {
+    background: rgba(201, 180, 106, 0.12);
+    color: var(--grade-c);
+    border: 1px solid rgba(201, 180, 106, 0.25);
+}
+
+.grade-D {
+    background: rgba(196, 122, 74, 0.12);
+    color: var(--grade-d);
+    border: 1px solid rgba(196, 122, 74, 0.25);
+}
+
+.grade-F {
+    background: rgba(184, 85, 85, 0.12);
+    color: var(--grade-f);
+    border: 1px solid rgba(184, 85, 85, 0.25);
+}
+
+/* --- CGPA Footer --- */
+.cgpa-section {
+    margin-top: 64px;
+    border: 1px solid rgba(65, 45, 21, 0.5);
+    background: rgba(31, 21, 12, 0.25);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.cgpa-label {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(225, 220, 201, 0.4);
+    margin-bottom: 12px;
+}
+
+.cgpa-value {
+    font-size: 56px;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    line-height: 1;
+}
+
+.cgpa-scale {
+    font-family: "DM Mono", monospace;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--cream-dim);
+    margin-left: 8px;
+}
+
+.cgpa-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.cgpa-meta-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px dashed rgba(65, 45, 21, 0.4);
+    padding-bottom: 4px;
+}
+
+.cgpa-meta-key {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(225, 220, 201, 0.4);
+}
+
+.cgpa-meta-val {
+    font-family: "DM Mono", monospace;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--cream);
+}
+
+.sem-gpa-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 240px;
+}
+
+.sem-gpa-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sem-gpa-name {
+    font-family: "DM Mono", monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: rgba(225, 220, 201, 0.4);
+    min-width: 100px;
+}
+
+.sem-gpa-bar-track {
+    flex: 1;
+    height: 2px;
+    background: rgba(65, 45, 21, 0.5);
+    position: relative;
+    min-width: 60px;
+}
+
+.sem-gpa-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transition: width 1s ease-out;
+}
+
+.sem-gpa-num {
+    font-family: "DM Mono", monospace;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 32px;
+    text-align: right;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .mark-title {
+        font-size: 22px;
+    }
+
+    .reg-input-wrapper {
+        padding: 0 16px;
+    }
+
+    .reg-input-yr,
+    .reg-input-num,
+    .reg-mirror,
+    .reg-separator {
+        font-size: 20px;
+    }
+
+    .result-header {
+        padding: 16px 24px;
+    }
+
+    .result-body {
+        padding: 24px 20px 60px;
+    }
+
+    .student-card {
+        margin-bottom: 40px;
+    }
+
+    .semester-block {
+        margin-bottom: 40px;
+    }
+
+    .cgpa-section {
+        padding: 32px 24px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 32px;
+    }
+
+    .cgpa-value {
+        font-size: 48px;
+    }
+
+    .cgpa-meta,
+    .sem-gpa-row {
+        width: 100%;
+    }
+}

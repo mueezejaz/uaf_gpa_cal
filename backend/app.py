@@ -194,6 +194,12 @@ def calculate_gpas(courses):
         if cr == 0:
             continue
 
+        existing_grade = c.get("Grade", "").strip().upper()
+        if existing_grade == "P":
+            c["_computed_grade"] = "P"
+            c["_qp"] = 0
+            continue  
+
         max_marks = cr * 20
         total_str = c.get("Total", "").strip()
         obtained = parse_float(total_str)
@@ -279,7 +285,7 @@ def get_result():
                     "grade": c.get("Grade", "").strip() or c.get("_computed_grade", ""),
                     "excluded": c.get("_excluded", False),          # NEW
                     "repeat_note": c.get("_repeat_note", ""),        # NEW
-                })
+})
             semester_list.append({
                 "name": sem,
                 "courses": sem_courses,

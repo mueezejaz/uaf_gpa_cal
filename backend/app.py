@@ -168,16 +168,33 @@ def parse_html(html):
 
 
 def calculate_gpas(courses):
+    from collections import defaultdict
+    code_attempts = defaultdict(list)
+    for i, c in enumerate(courses):
+        code = c.get("Course Code", "").strip()
+        if code:
+            code_attempts[code].append(i)
+
+    excluded_indices = set()
+    for code, indices in code_attempts.items():
+        if len(indices) < 2:
+            continue
+        for idx in indices[:-1]:  
+            grade = courses[idx].get("Grade", "").strip()
+            if grade in ("F", "D", ""):
+                courses[idx]["_excluded"] = True
+                courses[idx]["_repeat_note"] = f"Repeated in a later semester"
+                excluded_indices.add(idx)
+
     sem_data = defaultdict(lambda: {"qp": 0.0, "cr": 0})
     total_qp, total_cr = 0.0, 0
 
-    for c in courses:
+    for i, c in enumerate(courses):
         cr = parse_credits(c.get("Credit Hours", "0"))
         if cr == 0:
             continue
 
         max_marks = cr * 20
-
         total_str = c.get("Total", "").strip()
         obtained = parse_float(total_str)
 
@@ -198,6 +215,9 @@ def calculate_gpas(courses):
         grade = get_grade_from_qp(obtained, max_marks)
         c["_computed_grade"] = grade
         c["_qp"] = qp
+
+        if i in excluded_indices:
+            continue
 
         sem_data[c["Semester"]]["qp"] += qp
         sem_data[c["Semester"]]["cr"] += cr
@@ -257,6 +277,8 @@ def get_result():
                     "total": c.get("Total", ""),
                     "qp": round(c.get("_qp", 0), 2) if isinstance(c.get("_qp"), float) else 0,
                     "grade": c.get("Grade", "").strip() or c.get("_computed_grade", ""),
+                    "excluded": c.get("_excluded", False),          # NEW
+                    "repeat_note": c.get("_repeat_note", ""),        # NEW
                 })
             semester_list.append({
                 "name": sem,

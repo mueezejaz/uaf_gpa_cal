@@ -199,7 +199,15 @@ def calculate_gpas(courses):
             c["_computed_grade"] = "P"
             c["_qp"] = 0
             continue  
-
+        if existing_grade == "F":
+            c["_computed_grade"] = "F"
+            c["_qp"] = 0.0
+            if i not in excluded_indices:
+                sem_data[c["Semester"]]["qp"] += 0.0
+                sem_data[c["Semester"]]["cr"] += cr
+                total_qp += 0.0
+                total_cr += cr
+            continue
         max_marks = cr * 20
         total_str = c.get("Total", "").strip()
         obtained = parse_float(total_str)

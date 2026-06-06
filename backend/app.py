@@ -81,7 +81,7 @@ def get_qp(obtained, max_marks):
     supported = [20, 40, 60, 80, 100]
     nearest = min(supported, key=lambda x: abs(x - max_marks))
     entries = QP_TABLE.get(nearest, [])
-    qp = None
+    qp = 0.0  
     for (mark, points) in entries:
         if obtained >= mark:
             qp = points
@@ -197,7 +197,7 @@ def calculate_gpas(courses):
         existing_grade = c.get("Grade", "").strip().upper()
         if existing_grade == "P":
             c["_computed_grade"] = "P"
-            c["_qp"] = 0
+            c["_qp"] = 0.0
             continue  
         if existing_grade == "F":
             c["_computed_grade"] = "F"
@@ -289,7 +289,7 @@ def get_result():
                     "final": c.get("Final", ""),
                     "practical": c.get("Practical", ""),
                     "total": c.get("Total", ""),
-                    "qp": round(c.get("_qp", 0), 2) if isinstance(c.get("_qp"), float) else 0,
+                    "qp": round(c.get("_qp", 0.0), 2),
                     "grade": c.get("Grade", "").strip() or c.get("_computed_grade", ""),
                     "excluded": c.get("_excluded", False),          # NEW
                     "repeat_note": c.get("_repeat_note", ""),        # NEW

@@ -53,7 +53,7 @@ function renderCourseRow(course) {
       <td class="num">${course.final}</td>
       <td class="num">${course.practical}</td>
       <td class="num">${course.total}</td>
-      <td class="num">${isExcluded ? '—' : (course.qp || "")}</td>
+      <td class="num">${isExcluded ? '—' : (course.qp != null ? course.qp : "")}</td>
       <td class="center">
         <span class="grade-chip ${gradeClass}">${grade || "-"}</span>
       </td>

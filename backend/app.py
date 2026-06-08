@@ -167,6 +167,30 @@ def parse_html(html):
     return student_info, courses
 
 
+def semester_sort_key(sem_name):
+    sem_name_lower = sem_name.lower()
+    if "spring" in sem_name_lower:
+        season = 1
+    elif "fall" in sem_name_lower:
+        season = 2   
+    else:
+        season = 0   
+    year_range = re.search(r"(\d{4})-(\d{2,4})", sem_name)
+    if year_range:
+        start_year = int(year_range.group(1))
+        end_part   = year_range.group(2)
+        if len(end_part) == 2:
+            end_year = int(str(start_year)[:2] + end_part)
+        else:
+            end_year = int(end_part)
+        year = end_year
+    else:
+        single = re.search(r"(\d{4})", sem_name)
+        year = int(single.group(1)) if single else 0
+
+    return (year, season)
+
+
 def calculate_gpas(courses):
     from collections import defaultdict
     code_attempts = defaultdict(list)
@@ -272,7 +296,10 @@ def get_result():
 
         sem_gpas, cgpa, total_cr = calculate_gpas(courses)
 
+        # Collect unique semesters preserving original order, then sort latest-first
         semesters = list(dict.fromkeys(c["Semester"] for c in courses))
+        semesters.sort(key=semester_sort_key, reverse=True)
+
         semester_list = []
         for sem in semesters:
             sem_courses = []
@@ -291,9 +318,9 @@ def get_result():
                     "total": c.get("Total", ""),
                     "qp": round(c.get("_qp", 0.0), 2),
                     "grade": c.get("Grade", "").strip() or c.get("_computed_grade", ""),
-                    "excluded": c.get("_excluded", False),          # NEW
-                    "repeat_note": c.get("_repeat_note", ""),        # NEW
-})
+                    "excluded": c.get("_excluded", False),
+                    "repeat_note": c.get("_repeat_note", ""),
+                })
             semester_list.append({
                 "name": sem,
                 "courses": sem_courses,

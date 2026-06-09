@@ -1,6 +1,6 @@
 import "./styles.css";
 
-const API_URL = "https://uafgpacal-production.up.railway.app/api/result"; // change this to "/api/result for running it localy"
+const API_URL = "https://uaf-gpa-cal-ftm1.vercel.app/api/result"; // change this to "/api/result for running it localy"
 
 function getGpaClass(gpa) {
   if (gpa >= 3.5) return "gpa-a";

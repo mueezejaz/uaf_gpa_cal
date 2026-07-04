@@ -1,6 +1,7 @@
 import "./styles.css";
 
-const API_URL = "https://uafgpacal-production-f561.up.railway.app/api/result"; // change this to "/api/result for running it localy"
+// const API_URL = "https://uafgpacal-production-f561.up.railway.app/api/result"; // change this to "/api/result for running it localy"
+const API_URL = "https://uaf-gpa-cal-ftm1.vercel.app/api/result";
 
 function getGpaClass(gpa) {
   if (gpa >= 3.5) return "gpa-a";
@@ -23,12 +24,16 @@ function renderStudentCard(info) {
   if (!fields.length) return "";
   return `
     <div class="student-card">
-      ${fields.map(([k, v]) => `
+      ${fields
+        .map(
+          ([k, v]) => `
         <div class="student-card-field">
           <div class="student-card-key">${k}</div>
           <div class="student-card-val">${v}</div>
         </div>
-      `).join("")}
+      `,
+        )
+        .join("")}
     </div>
   `;
 }
@@ -39,13 +44,15 @@ function renderCourseRow(course) {
   const isExcluded = course.excluded;
 
   return `
-    <tr class="${isExcluded ? 'row-excluded' : ''}">
+    <tr class="${isExcluded ? "row-excluded" : ""}">
       <td class="code">${course.code}</td>
       <td>
         ${course.title}
-        ${isExcluded
-      ? `<span class="repeat-badge" title="${course.repeat_note}">Repeated later — excluded from GPA</span>`
-      : ''}
+        ${
+          isExcluded
+            ? `<span class="repeat-badge" title="${course.repeat_note}">Repeated later — excluded from GPA</span>`
+            : ""
+        }
       </td>
       <td class="num center">${course.credit_hours}</td>
       <td class="num">${course.mid}</td>
@@ -53,7 +60,7 @@ function renderCourseRow(course) {
       <td class="num">${course.final}</td>
       <td class="num">${course.practical}</td>
       <td class="num">${course.total}</td>
-      <td class="num">${isExcluded ? '—' : (course.qp != null ? course.qp : "")}</td>
+      <td class="num">${isExcluded ? "—" : course.qp != null ? course.qp : ""}</td>
       <td class="center">
         <span class="grade-chip ${gradeClass}">${grade || "-"}</span>
       </td>
@@ -97,11 +104,12 @@ function renderSemester(sem) {
 
 function renderCgpaSection(data) {
   const cgpaClass = getGpaClass(data.cgpa);
-  const semGpaRows = data.semesters.map(sem => {
-    const pct = Math.min((sem.gpa / 4.0) * 100, 100);
-    const color = getGpaBarColor(sem.gpa);
-    const gpaClass = getGpaClass(sem.gpa);
-    return `
+  const semGpaRows = data.semesters
+    .map((sem) => {
+      const pct = Math.min((sem.gpa / 4.0) * 100, 100);
+      const color = getGpaBarColor(sem.gpa);
+      const gpaClass = getGpaClass(sem.gpa);
+      return `
       <div class="sem-gpa-item">
         <span class="sem-gpa-name">${sem.name}</span>
         <div class="sem-gpa-bar-track">
@@ -110,7 +118,8 @@ function renderCgpaSection(data) {
         <span class="sem-gpa-num ${gpaClass}">${sem.gpa.toFixed(2)}</span>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   return `
     <div class="cgpa-section fade-in">
@@ -276,7 +285,8 @@ function buildLanding() {
   const regWrapper = document.getElementById("reg-wrapper");
 
   function updateButtonState() {
-    btn.disabled = yearInput.value.length !== 4 || numInput.value.trim().length === 0;
+    btn.disabled =
+      yearInput.value.length !== 4 || numInput.value.trim().length === 0;
   }
 
   function syncYearWidth() {
@@ -301,7 +311,11 @@ function buildLanding() {
   });
 
   yearInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && yearInput.value.length === 4 && numInput.value.trim().length > 0) {
+    if (
+      e.key === "Enter" &&
+      yearInput.value.length === 4 &&
+      numInput.value.trim().length > 0
+    ) {
       submitForm();
     }
   });
@@ -310,7 +324,11 @@ function buildLanding() {
     if (e.key === "Backspace" && this.value === "") {
       yearInput.focus();
     }
-    if (e.key === "Enter" && yearInput.value.length === 4 && this.value.trim().length > 0) {
+    if (
+      e.key === "Enter" &&
+      yearInput.value.length === 4 &&
+      this.value.trim().length > 0
+    ) {
       submitForm();
     }
   });
@@ -357,3 +375,4 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+

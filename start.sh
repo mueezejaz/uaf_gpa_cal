@@ -6,29 +6,33 @@ echo "Starting application on port ${PORT}..."
 python backend/app.py &
 APP_PID=$!
 
-# Give the application a moment to start
 sleep 2
 
 echo "Starting Cloudflare Quick Tunnel..."
-echo "The public URL will appear below."
 
 cloudflared tunnel \
   --no-autoupdate \
-  --url "http://127.0.0.1:${PORT}" 2>&1 | while IFS= read -r line
-do
-    echo "[cloudflared] $line"
-
-    case "$line" in
-        *trycloudflare.com*)
-            echo "========================================"
-            echo "PUBLIC CLOUDFLARE URL:"
-            echo "$line"
-            echo "========================================"
-            ;;
-    esac
-done &
+  --url "http://127.0.0.1:${PORT}" \
+  2>&1 | tee /tmp/cloudflared.log &
 
 TUNNEL_PID=$!
+
+(
+    while true
+    do
+        URL=$(grep -oE 'https://[^ ]*trycloudflare\.com' /tmp/cloudflared.log | head -n 1)
+
+        if [ -n "$URL" ]; then
+            echo "========================================"
+            echo "PUBLIC CLOUDFLARE URL:"
+            echo "$URL"
+            echo "========================================"
+            break
+        fi
+
+        sleep 1
+    done
+) &
 
 cleanup() {
     echo "Stopping services..."

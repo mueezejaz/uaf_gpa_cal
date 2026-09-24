@@ -2,6 +2,21 @@
 
 A web application that fetches and displays student results from the University of Agriculture Faisalabad LMS.
 
+## UAF Agent frontend
+
+The GitHub Pages workflow now builds and deploys the AI chat frontend from
+`frontend_agent/`. It streams requests to the deployed `uaf-agent` backend in
+production and uses `http://localhost:3000/api/agent` during local development.
+
+```bash
+cd frontend_agent
+npm install
+npm run dev    # http://localhost:5500
+npm run build  # static output in frontend_agent/dist/
+```
+
+The original result-calculator frontend remains in `frontend/` for the Flask
+application in `backend/`.
 
 ## Clone the Repository
 

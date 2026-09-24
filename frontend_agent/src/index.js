@@ -75,6 +75,7 @@ function extractReg(message) {
 
 function toolTitle(toolName) {
   if (toolName === "calculate_gpa") return "Calculating GPA";
+  if (toolName === "calculate_future_gpa") return "Projecting next semester";
   return toolName === "fetch_uaf_result" || toolName === "unknown"
     ? "Fetching result"
     : String(toolName).replace(/_/g, " ");
@@ -97,10 +98,15 @@ function summarize(result) {
       const n = result.scenarios.length;
       const first = result.scenarios[0];
       if (first && first.cgpa) {
+        const future = first.future_semester;
         return {
           ok: true,
           short: `CGPA ${first.cgpa.before} → ${first.cgpa.after}`,
-          detail: n > 1 ? `${n} scenarios` : first.label || "what-if",
+          detail: future
+            ? `${first.semester || "Next semester"}: GPA ${future.gpa} · ${future.credit_hours} cr`
+            : n > 1
+              ? `${n} scenarios`
+              : first.label || "what-if",
         };
       }
       return { ok: true, short: `${n} scenario${n === 1 ? "" : "s"}`, detail: "solved" };

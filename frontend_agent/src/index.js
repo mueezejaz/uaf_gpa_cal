@@ -517,6 +517,7 @@ async function send(raw) {
     chunks: 0,
     chars: 0,
     tools: 0,
+    errors: [],
     openStep: null,
     connectStep: null,
     writing: null,
@@ -572,10 +573,19 @@ async function send(raw) {
           run.openStep = addStep(ctl, toolTitle(ev.toolName), reg || "…");
         } else if (ev.type === "tool-result") {
           const s = summarize(ev.result);
-          stepDone(run.openStep);
-          run.openStep = null;
-          addStep(ctl, "Result received", s.short, s.ok ? "done" : "fail");
-          if (!s.ok) throw new Error(s.short);
+          if (!s.ok) {
+            // Tool failures are valid assistant answers. Hide the red trace
+            // state and let the model—or the fallback below—speak normally.
+            run.errors.push(s.short);
+            if (run.openStep) {
+              run.openStep.remove();
+              run.openStep = null;
+            }
+          } else {
+            stepDone(run.openStep);
+            run.openStep = null;
+            addStep(ctl, "Result received", s.short, "done");
+          }
         } else if (ev.type === "text-delta") {
           if (!run.firstTokenAt) {
             run.firstTokenAt = performance.now();
@@ -596,7 +606,12 @@ async function send(raw) {
           }
           renderAnswer(ctl);
         } else if (ev.type === "error") {
-          throw new Error(ev.message);
+          const message = String(ev.message || "The assistant could not complete this request.");
+          run.errors.push(message);
+          if (run.openStep) {
+            run.openStep.remove();
+            run.openStep = null;
+          }
         }
       }
     }
@@ -612,7 +627,7 @@ async function send(raw) {
       run.writing = null;
     }
     if (!ctl.text) {
-      ctl.text = "… (empty reply)";
+      ctl.text = run.errors[run.errors.length - 1] || "… (empty reply)";
     }
     renderAnswer(ctl);
 
@@ -632,12 +647,17 @@ async function send(raw) {
       if (activeStep) stepCancelled(activeStep, "Cancelled");
       finishPhase(ctl, "Stopped");
     } else {
-      const failed = ctl.rows.querySelector('.t-row[data-state="running"]') || run.connectStep;
-      stepFail(failed, msg.slice(0, 60));
-      ctl.error = "⚠ " + msg;
-      ctl.row.querySelector(".answer").classList.add("is-error");
+      // Keep request/tool failures in the normal assistant answer area. The
+      // user should read the message, not a red "Failed" debug state.
+      ctl.error = "";
+      if (!ctl.text) ctl.text = msg;
+      ctl.rows.querySelectorAll('.t-row[data-state="running"]').forEach((row) => row.remove());
       renderAnswer(ctl);
-      finishPhase(ctl, "Failed");
+      finishPhase(ctl, "Answered");
+      ctl.autoExpand = false;
+      if (ctl.userToggled === null) paint(ctl);
+      showFollowUps(ctl);
+      scrollThread();
     }
   } finally {
     if (isCurrent()) {

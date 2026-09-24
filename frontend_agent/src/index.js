@@ -486,6 +486,7 @@ restoreHistory();
 async function send(raw) {
   const message = String(raw || "").trim();
   if (!message || busy) return;
+  input.blur();
   lastUserMessage = message;
 
   // snapshot of turns *before* this message — sent to the model so it has
@@ -501,7 +502,6 @@ async function send(raw) {
   busy = true;
   setSendButtonState();
   input.disabled = false;
-  input.focus();
 
   thread.appendChild(createUserMessage(message));
   const ctl = createAssistantMessage();
@@ -649,7 +649,6 @@ async function send(raw) {
       activeRun = null;
       activeAbort = null;
       setSendButtonState();
-      input.focus();
     }
   }
 }

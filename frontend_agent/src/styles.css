@@ -617,67 +617,6 @@ button {
     color: var(--ink-2);
 }
 
-/* follow-ups */
-.followups {
-    margin-top: 10px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 400ms ease;
-}
-
-.followups.is-on {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.follow-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--ink-2);
-}
-
-.follow-list {
-    display: flex;
-    flex-direction: column;
-    margin-top: 2px;
-}
-
-.follow {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0 -6px;
-    padding: 7px 6px;
-    border-bottom: 1px solid var(--line);
-    border-radius: 7px 7px 0 0;
-    font-size: 12.5px;
-    color: var(--ink);
-    text-align: left;
-    transition: background 120ms ease;
-    animation: fade-up 350ms var(--ease) both;
-}
-
-.follow:nth-child(3) {
-    animation-delay: 90ms;
-}
-
-.follow:nth-child(4) {
-    animation-delay: 180ms;
-}
-
-.follow svg {
-    flex-shrink: 0;
-    color: var(--ink-3);
-}
-
-.follow:hover {
-    background: var(--hover-2);
-}
-
-.follow:hover svg {
-    color: var(--accent);
-}
-
 /* --- composer (prompt bar) --- */
 .composer {
     flex-shrink: 0;

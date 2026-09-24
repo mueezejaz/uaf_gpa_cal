@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
 /* UAF Agent — rebuilt on the beautifului.dev primitives:
      · Chat        — tabbed panel, reply thread, prompt-bar composer
      · Thinking    — expandable trace (steps, spinner → check, live timing)
-     · Streaming   — streamed answer with caret, actions, follow-ups
+     · Streaming   — streamed answer with caret and actions
    The trace keeps running while tokens stream, so the panel never goes
    quiet mid-answer. */
 
@@ -25,12 +25,6 @@ const STARTERS = [
   "Find my result for 2022-AG-1234",
   "What if I enroll courses graded D to B?",
   "How can I lift my CGPA to 3.5 this year?",
-];
-
-const FOLLOW_UPS = [
-  "Analyze my CGPA trend",
-  "What if I retook a failed course?",
-  "Show repeated (excluded) courses",
 ];
 
 const ICON = {
@@ -194,8 +188,7 @@ function createAssistantMessage() {
         <button type="button" class="act-btn" data-act="up" aria-label="Good answer" aria-pressed="false">${ICON.up}</button>
         <button type="button" class="act-btn" data-act="down" aria-label="Bad answer" aria-pressed="false">${ICON.down}</button>
         <span class="act-meta" hidden></span>`;
-  const follow = el("div", "followups");
-  answer.append(p, actions, follow);
+  answer.append(p, actions);
 
   row.append(thinking, answer);
 
@@ -208,7 +201,6 @@ function createAssistantMessage() {
     toks,
     caret,
     actions,
-    follow,
     text: "",
     error: "",
     caretHidden: false,
@@ -309,21 +301,6 @@ function stepCancelled(row, secondary) {
   row.dataset.state = "cancelled";
   row.querySelector(".t-icon").innerHTML = ICON.stop;
   if (secondary !== undefined) row.querySelector(".t-secondary").textContent = secondary;
-}
-
-function showFollowUps(ctl) {
-  ctl.follow.innerHTML = '<p class="follow-label">Follow-ups</p>';
-  const list = el("div", "follow-list");
-  FOLLOW_UPS.forEach((text) => {
-    const b = el("button", "follow");
-    b.type = "button";
-    b.innerHTML = ICON.follow;
-    b.appendChild(el("span", null, text));
-    b.addEventListener("click", () => send(text));
-    list.appendChild(b);
-  });
-  ctl.follow.appendChild(list);
-  ctl.follow.classList.add("is-on");
 }
 
 function wireActions(ctl) {
@@ -453,7 +430,6 @@ function restoreHistory() {
     finishPhase(ctl, "Answered");
     ctl.autoExpand = false;
     paint(ctl);
-    showFollowUps(ctl);
     thread.appendChild(ctl.row);
   }
   scrollThread();
@@ -643,7 +619,6 @@ async function send(raw) {
       `${run.tools} tool call${run.tools === 1 ? "" : "s"} · ${run.chunks} chunks`;
     ctl.autoExpand = false;
     if (ctl.userToggled === null) paint(ctl);
-    showFollowUps(ctl);
     scrollThread();
   } catch (err) {
     if (!isCurrent()) return;
@@ -662,7 +637,6 @@ async function send(raw) {
       finishPhase(ctl, "Answered");
       ctl.autoExpand = false;
       if (ctl.userToggled === null) paint(ctl);
-      showFollowUps(ctl);
       scrollThread();
     }
   } finally {
